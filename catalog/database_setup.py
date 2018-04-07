@@ -58,4 +58,3 @@ class Item(Base):
 engine = create_engine('sqlite:///catalogueitems.db')
 
 Base.metadata.create_all(engine)
-print("database created")

@@ -13,6 +13,7 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
+    categories = relationship("Category", cascade="save-update, merge, delete")
 
 
 class Category(Base):
@@ -22,6 +23,7 @@ class Category(Base):
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    items = relationship("Item", cascade="save-update, merge, delete")
 
     @property
     def serialize(self):
@@ -45,7 +47,7 @@ class Item(Base):
 
     @property
     def serialize(self):
-
+        """Return object data in easily serializeable format"""
         return {
             'name': self.name,
             'description': self.description,
@@ -56,3 +58,4 @@ class Item(Base):
 engine = create_engine('sqlite:///catalogueitems.db')
 
 Base.metadata.create_all(engine)
+print("database created")

@@ -1,0 +1,60 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<div class="flash-msg flash">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li><strong> {{ message }} </strong></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-sm-4">
+            <div class="card">
+                <h5 class="card-header">Categories</h5>
+                <div class="card-body">
+                    {% for list_category in categories %}
+                        <a href="{{url_for('showCategory', category_id = list_category.id)}}">
+                            {% if list_category.id == category.id  %}
+                                <p id="selected">{{list_category.name}}</p>
+                            {% else %}
+                                <p>{{list_category.name}}</p>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-sm-8">
+            <div class="card">
+                <h5 class="card-header">{{category.name}} : ({{numItems}} item(s))</h5>
+                <div class="card-body">
+                    <a href="{{url_for('newItem', categories=categories)}}">
+                        <button class="plus-button btn btn-info">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            Add Item
+                        </button>
+                    </a>
+                    {% for item in items %}
+                        <a href="{{url_for('showItem', category_id=item.category_id, item_id = item.id)}}">
+                            <p>{{ item.name }}</p>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+{% endblock %}

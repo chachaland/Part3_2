@@ -1,0 +1,102 @@
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css");
+
+body {
+    font-family: 'Montserrat Alternates', sans-serif;
+    font-weight: 700;
+}
+
+/* Header */
+
+.navbar-light {
+    background-color: #e3f2fd;
+}
+
+.navbar-light .navbar-brand {
+    background-color: #e3f2fd;
+    color: #ef6900;
+}
+
+/*.navbar a {
+    padding-left: 2rem;
+}
+
+.navbar form {
+    padding-right: 2rem;
+}*/
+
+.btn-outline-secondary {
+    color: #ef6900;
+    border-color: #ef6900;
+}
+
+/* Content */
+
+.card {
+    margin: 30px auto;
+}
+
+.card-header {
+    background-color: #ef6900;
+    color: #e3f2fd;
+}
+
+.card-body a  {
+    color: black;
+    text-decoration: none;
+}
+
+.card-body a p {
+    display: table;
+    background-color: white;
+    margin-bottom: 1.5rem;
+}
+
+.card-body a p:hover {
+    color: #ef6900;;
+    background-color: #e3f2fd;
+    border: 10px solid #e3f2fd;
+}
+
+/* flash */
+
+ul {
+  list-style-type: none;
+  text-align: center;
+}
+
+.flash-msg {
+    background-color: #c8ffc8;
+}
+
+
+/* public catalogue */
+
+.plus-button {
+    float: right;
+}
+
+/* public category */
+
+#selected {
+    color: #e3f2fd;
+    background-color: #ef6900;
+    border: 5px solid #ef6900;
+}
+
+/* public item */
+
+.center-button {
+    display: block;
+    margin: 5px auto;
+}
+
+/* delete item */
+
+#del-item {
+    color:red;
+    font-weight: 700;
+}
+
+.delete-header {
+    background-color: red;
+}

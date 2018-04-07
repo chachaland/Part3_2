@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-sm-10">
+            <div class="card">
+                <h5 class="delete-header card-header">Delete item: {{item.name}}</h5>
+                <div class="card-body">
+                    <h3>Are you sure you want to delete <span id="del-item">{{item.name}}</span> ?</h3>
+                    <form method="post">
+                        <button type="submit" class="btn btn-danger center-button" id="submit" type="submit">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> DELETE
+                        </button>
+                    </form>
+                    <a href = '{{url_for('showCatalogue')}}'>
+                        <button class="btn btn-default center-button">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> CANCEL
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

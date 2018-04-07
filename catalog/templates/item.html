@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-sm-10">
+            <div class="card">
+                <h5 class="card-header">{{item.name}}</h5>
+                <div class="card-body">
+                    <p>{{item.description}}</p>
+                    <a href="{{ url_for('editItem', category_id=item.category_id, item_id = item.id) }}">
+                        <button class="center-button btn btn-secondary">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                            EDIT
+                        </button>
+                    </a>
+                    <a href="{{ url_for('deleteItem', category_id=item.category_id, item_id = item.id) }}">
+                        <button class="center-button btn btn-danger">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            DELETE
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

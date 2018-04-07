@@ -5,7 +5,7 @@ from flask import (Flask,
                    jsonify,
                    url_for,
                    flash)
-from sqlalchemy import create_engine, asc, desc
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 from flask import session as login_session
@@ -176,9 +176,8 @@ def gdisconnect():
         response = make_response(json.dumps('Current user not connected'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    url = '''
-        https://accounts.google.com/o/oauth2/revoke?token=%s
-        ''' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token='
+    url += login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -210,7 +209,6 @@ def catalogueJSON():
 
 @app.route('/catalogue/<int:category_id>/category/JSON')
 def categoryItemsJSON(category_id):
-    category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(cateogory_id=category_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
@@ -294,10 +292,8 @@ def editItem(category_id, item_id):
     editedItem = session.query(Item).filter_by(id=item_id).one()
     categories = session.query(Category).all()
     if editedItem.user_id != login_session['user_id']:
-        return """
-            <script>function() {alert("NOT AUTHORIZED TO EDIT THIS ITEM.
-            You can only the edit the item you have created");})();</script>
-            """
+        return """<script>function myFunction() {alert('NOT AUTHORIZED TO EDIT THIS ITEM!!!');
+                window.history.go(-1);}</script><body onload='myFunction()'>"""  # noqa
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -329,10 +325,8 @@ def deleteItem(category_id, item_id):
     except NoResultFound as e:
         return e
     if itemToDelete.user_id != login_session['user_id']:
-        return """
-            <script>function() {alert("NOT AUTHORIZED TO EDIT THIS ITEM.
-            You can only the edit the item you have created");})();</script>
-            """
+        return """<script>function myFunction() {alert('NOT AUTHORIZED TO DELETE THIS ITEM!!!');
+                window.history.go(-1);}</script><body onload='myFunction()'>"""  # noqa
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()

@@ -131,7 +131,10 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '''
+            " style = "width: 300px; height: 300px;border-radius:
+            150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;">
+            '''
     output += '</br>'
     flash("you are now logged in as %s" % login_session['username'], 'success')
     print("done!")
@@ -142,7 +145,8 @@ def gconnect():
 
 def createUser(login_session):
     newUser = User(name=login_session['username'],
-                   email=login_session['email'], picture=login_session['picture'])
+                   email=login_session['email'],
+                   picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
@@ -172,7 +176,9 @@ def gdisconnect():
         response = make_response(json.dumps('Current user not connected'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = '''
+        https://accounts.google.com/o/oauth2/revoke?token=%s
+        ''' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -222,9 +228,11 @@ def showCatalogue():
     categories = session.query(Category).all()
     items = session.query(Item).order_by(Item.id.desc()).limit(5).all()
     if 'username' not in login_session:
-        return render_template('publiccatalogue.html', categories=categories, items=items)
+        return render_template('publiccatalogue.html', categories=categories,
+                               items=items)
     else:
-        return render_template('catalogue.html', categories=categories, items=items)
+        return render_template('catalogue.html', categories=categories,
+                               items=items)
 
 # Show a cateogory items
 
@@ -237,18 +245,21 @@ def showCategory(category_id):
     items = session.query(Item).filter_by(category_id=category_id).all()
     numItems = session.query(Item).filter_by(category_id=category_id).count()
     if 'username' not in login_session:
-        return render_template('publiccategory.html', items=items, category=category, categories=categories, numItems=numItems)
+        return render_template('publiccategory.html', items=items,
+                               category=category, categories=categories,
+                               numItems=numItems)
     else:
-        return render_template('category.html', items=items, category=category, categories=categories, numItems=numItems)
+        return render_template('category.html', items=items, category=category,
+                               categories=categories, numItems=numItems)
 
 # Create a new category item
 
 
 @app.route('/catalogue/new/', methods=['GET', 'POST'])
 def newItem():
-    categories = session.query(Category).all()
     if 'username' not in login_session:
         return redirect(url_for('showLogin'))
+    categories = session.query(Category).all()
     if request.method == 'POST':
         newItem = Item(
             name=request.form['name'],
@@ -265,7 +276,8 @@ def newItem():
 # Edit a category item
 
 
-@app.route('/catalogue/<int:category_id>/category/<int:item_id>/', methods=['GET', 'POST'])
+@app.route('/catalogue/<int:category_id>/category/<int:item_id>/',
+           methods=['GET', 'POST'])
 def showItem(category_id, item_id):
     item = session.query(Item).filter_by(id=item_id).one()
     if 'username' not in login_session:
@@ -274,13 +286,18 @@ def showItem(category_id, item_id):
         return render_template('item.html', item=item)
 
 
-@app.route('/catalogue/<int:category_id>/category/<int:item_id>/edit/', methods=['GET', 'POST'])
+@app.route('/catalogue/<int:category_id>/category/<int:item_id>/edit/',
+           methods=['GET', 'POST'])
 def editItem(category_id, item_id):
-    editedItem = session.query(Item).filter_by(id=item_id).one()
-    category = session.query(Category).filter_by(id=category_id).one()
-    categories = session.query(Category).all()
     if 'username' not in login_session:
         return redirect(url_for('showLogin'))
+    editedItem = session.query(Item).filter_by(id=item_id).one()
+    categories = session.query(Category).all()
+    if editedItem.user_id != login_session['user_id']:
+        return """
+            <script>function() {alert("NOT AUTHORIZED TO EDIT THIS ITEM.
+            You can only the edit the item you have created");})();</script>
+            """
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -293,22 +310,29 @@ def editItem(category_id, item_id):
         flash('%s (Item) Successfully Edited' % (editedItem.name))
         return redirect(url_for('showCategory', category_id=category_id))
     else:
-        return render_template('edititem.html', categories=categories, category_id=category_id, item_id=item_id, item=editedItem)
+        return render_template('edititem.html', categories=categories,
+                               category_id=category_id, item_id=item_id,
+                               item=editedItem)
 
 # Delete a menu item
 
 
-@app.route('/catalogue/<int:category_id>/category/<int:item_id>/delete/', methods=['GET', 'POST'])
+@app.route('/catalogue/<int:category_id>/category/<int:item_id>/delete/',
+           methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
-    category = session.query(Category).filter_by(id=category_id).one()
-    try:
-        itemToDelete = session.query(Item).filter_by(id=item_id).one()
-    except MultipleResultsFound, e:
-        return e
-    except NoResultFound, e:
-        return e
     if 'username' not in login_session:
         return redirect(url_for('showLogin'))
+    try:
+        itemToDelete = session.query(Item).filter_by(id=item_id).one()
+    except MultipleResultsFound as e:
+        return e
+    except NoResultFound as e:
+        return e
+    if itemToDelete.user_id != login_session['user_id']:
+        return """
+            <script>function() {alert("NOT AUTHORIZED TO EDIT THIS ITEM.
+            You can only the edit the item you have created");})();</script>
+            """
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
